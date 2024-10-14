@@ -1,0 +1,54 @@
+name: Deploy on EC2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout source
+        uses: actions/checkout@v4
+        
+      # Create the .env file using secrets from GitHub
+      - name: Create .env file
+        run: |
+          touch .env
+          echo "${{ secrets.ENV_FILE }}" > .env
+
+      # Login to Docker Hub
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # Build the Docker image
+      - name: Build Docker image
+        run: docker build -t muhammadhuzaifa8/todo-list-nodejs .
+
+      # Push the Docker image to Docker Hub
+      - name: Publish image to Docker Hub
+        run: docker push muhammadhuzaifa8/todo-list-nodejs
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      # Login to Docker Hub on EC2 instance
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # Pull the Docker image from Docker Hub
+      - name: Pull Docker image from Docker Hub
+        run: docker pull muhammadhuzaifa8/todo-list-nodejs:latest
+
+      # Stop and remove the old container (if exists)
+      - name: Stop and remove old container
+        run: |
+          docker stop todolist || true
+          docker rm todolist || true
+
+      # Run the new container
+      - name: Run Docker container
+        run: docker run -d -p 4000:4000 --name todolist muhammadhuzaifa8/todo-list-nodejs:latest
