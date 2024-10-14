@@ -25,11 +25,11 @@ jobs:
 
       # Build the Docker image
       - name: Build Docker image
-        run: sudo docker build -t muhammadhuzaifa8/todo-list-nodejs .
+        run: docker build -t muhammadhuzaifa8/todo-list-nodejs .
 
       # Push the Docker image to Docker Hub
       - name: Publish image to Docker Hub
-        run: sudo docker push muhammadhuzaifa8/todo-list-nodejs
+        run: docker push muhammadhuzaifa8/todo-list-nodejs
 
   deploy:
     needs: build
@@ -41,14 +41,14 @@ jobs:
 
       # Pull the Docker image from Docker Hub
       - name: Pull Docker image from Docker Hub
-        run: sudo docker pull muhammadhuzaifa8/todo-list-nodejs:latest
+        run: docker pull muhammadhuzaifa8/todo-list-nodejs:latest
 
       # Stop and remove the old container (if exists)
       - name: Stop and remove old container
         run: |
-          sudo docker stop todolist || true
-          sudo docker rm todolist || true
+          docker stop todolist || true
+          docker rm todolist || true
 
       # Run the new container
       - name: Run Docker container
-        run: sudo docker run -d -p 4000:4000 --name todolist muhammadhuzaifa8/todo-list-nodejs:latest
+        run: docker run -d -p 4000:4000 --name todolist muhammadhuzaifa8/todo-list-nodejs:latest
