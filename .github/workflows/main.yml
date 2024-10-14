@@ -18,9 +18,9 @@ jobs:
       - name: Login to docker hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}       
       - name: Build docker image
-        run: docker build -t muhammadhuzaifa8/Todo-List-nodejs .  
+        run: docker build -t muhammadhuzaifa8/todo-List-nodejs .  
       - name: Publish image to docker hub
-        run: docker push muhammadhuzaifa8/Todo-List-nodejs
+        run: docker push muhammadhuzaifa8/todo-List-nodejs
 
   deploy:
     needs: build
@@ -29,8 +29,8 @@ jobs:
       - name: Login to docker hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
       - name: Pull image from docker hub
-        run: docker pull muhammadhuzaifa8/Todo-List-nodejs:latest
+        run: docker pull muhammadhuzaifa8/todo-List-nodejs:latest
       - name: Delete old container
         run: docker rm -f tododlist
       - name: Run docker container
-        run: docker run -d -p 4000:4000 --name todolist muhammadhuzaifa8/Todo-List-nodejs
+        run: docker run -d -p 4000:4000 --name todolist muhammadhuzaifa8/todo-List-nodejs
